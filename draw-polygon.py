@@ -1,4 +1,4 @@
-# Image annotation for creating training and test sets
+# create polygons around bulliform cells for creating training and test sets
 
 # import the necessary packages
 import argparse
