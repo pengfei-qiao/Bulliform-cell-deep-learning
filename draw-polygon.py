@@ -1,5 +1,4 @@
-# USAGE
-# python click_and_crop.py --image jurassic_park_kitchen.jpg
+# Image annotation for creating training and test sets
 
 # import the necessary packages
 import argparse
