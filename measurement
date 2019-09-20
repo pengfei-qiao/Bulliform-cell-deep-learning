@@ -1,0 +1,87 @@
+# functions for measuring bulliform cell traits
+
+import os
+import h5py
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from keras.models import load_model
+from keras import backend as K
+from skimage.io import imread
+from skimage import img_as_bool
+import pickle
+import numpy as np
+import time
+import tensorflow as tf
+
+# models to load
+models = ['model-lr-5e-5-13-white.h5','model-lr-5e-5-26-white.h5','model-lr-5e-5-10-white.h5','model-lr-5e-5-6-white.h5','model-lr-5e-5-16-white.h5']
+
+
+img_w = 480 # image width
+img_h = 480 # image height
+img_c = 1 # image channels
+
+
+# image ids
+X_ids = sorted(os.listdir('./resized'))
+X_ids = [i for i in X_ids if '.png' in i]
+
+
+# define metrics
+smooth = 1.
+def dice_coef(y_true, y_pred):
+    y_true_f = K.flatten(y_true)
+    y_pred_f = K.flatten(y_pred)
+    intersection = K.sum(y_true_f * y_pred_f)
+    return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
+
+def dice_coef_loss(y_true, y_pred):
+    return -dice_coef(y_true, y_pred)
+
+
+# define model fitting
+def fit_model(input,model):
+    model = load_model(model, custom_objects={'dice_coef': dice_coef})
+    preds = model.predict(input, verbose=1)
+    return preds
+
+
+# define get bulliform cell stats
+# False is black, True is white (bulliform cells)
+def get_bc_area(input):
+    return float(np.sum(input))/(input.shape[0]*input.shape[1]*input.shape[2])
+
+def get_bc_1d_cols(input, true_threshold=3, false_threshold=5): # input is 1-d array
+    counter = 0
+    true_counter = 0
+    false_counter = false_threshold
+    new_input = np.pad(input, (false_threshold+1,), 'constant', constant_values=(0,0)) # to count bulliform cells that start from the margin
+    for i in new_input:
+        if i:
+            true_counter += 1
+        else:
+            if true_counter >= true_threshold and false_counter >= false_threshold: # number of pixels for thresholding a bulliform cell
+                counter += 1
+                true_counter = 0
+                false_counter = 0
+            else:
+                true_counter = 0 
+                false_counter += 1
+    return counter
+
+def get_bc_3d_cols(input, true_threshold=3, false_threshold=5): # input is 3-d array, with last shape equal to 1
+    rows = input.shape[0]
+    counter = 0
+    for row in xrange(rows):
+        counter += get_bc_1d_cols(input[row,].ravel(),true_threshold, false_threshold)
+    return float(counter)/rows
+
+def get_ave_bc_width(input):
+    if get_bc_3d_cols(input) == 0:
+        return float(0)
+    else:
+        return float(np.sum(input))/get_bc_3d_cols(input)
+
+def get_ave_bc_spacing_width(input):
+    return float(np.sum(1-input))/(get_bc_3d_cols(input)+1)
