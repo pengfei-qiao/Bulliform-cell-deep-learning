@@ -14,10 +14,6 @@ import numpy as np
 import time
 import tensorflow as tf
 
-# models to load
-models = ['model-lr-5e-5-13-white.h5','model-lr-5e-5-26-white.h5','model-lr-5e-5-10-white.h5','model-lr-5e-5-6-white.h5','model-lr-5e-5-16-white.h5']
-
-
 img_w = 480 # image width
 img_h = 480 # image height
 img_c = 1 # image channels
