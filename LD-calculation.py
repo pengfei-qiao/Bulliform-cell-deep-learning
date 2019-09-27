@@ -66,19 +66,3 @@ def get_nearby_LD(target,window):
             r2 = D**2/(p1*p2*q1*q2)
         LD[genome[i][2]] = r2
     return LD
-
-# plotting LD landscape
-for i,j in get_nearby_LD('S4_136976844',50000000).items():
-    if i == genome['S4_136976844'][2]:
-        i /= 1000.
-        plt.plot(i,j,'ro')
-    else:
-        i /= 1000.
-        plt.plot(i,j,'k^')
-    plt.xlabel('SNP Position (kb)')
-    plt.ylabel(r'$r^2$')
-    plt.title('Chromosome 4')
-
-plt.savefig('LD-S4_136976844.pdf')
-plt.clf()
-
