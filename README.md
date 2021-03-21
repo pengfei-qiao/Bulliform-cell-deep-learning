@@ -6,7 +6,7 @@ This repo includes the scripts used in the study of bulliform cell patterning ma
 
 
 
-### The attached scripts (median-and-average-with-big-data.py, median-and-average-with-big-data.ipynb) pulls the historical S&P 500 daily prices for the past year, mimics the data streaming process to distribute the data into four partitions, and calculates the mean and median of the prices.
+#### The attached scripts (median-and-average-with-big-data.py, median-and-average-with-big-data.ipynb) pulls the historical S&P 500 daily prices for the past year, mimics the data streaming process to distribute the data into four partitions, and calculates the mean and median of the prices.
 
 #### The code can be divided into ? parts:
 
